@@ -69,8 +69,10 @@ export async function createLab(user, labType) {
       accessUrl,
       status: 'running',
     });
-  } catch (error) {
-  console.error('LAB CREATION ERROR:', error);
+  }  catch (error) {
+  console.error('LAB CREATION ERROR FULL:', error);
+  console.error('LAB CREATION ERROR MESSAGE:', error?.message);
+  console.error('LAB CREATION ERROR STACK:', error?.stack);
 
   await deleteService(namespace, resourceNames.serviceName).catch(() => undefined);
   await deleteDeployment(namespace, resourceNames.deploymentName).catch(() => undefined);
