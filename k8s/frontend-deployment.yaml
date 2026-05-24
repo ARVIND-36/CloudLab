@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudlab-frontend
+  namespace: cloudlab
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cloudlab-frontend
+  template:
+    metadata:
+      labels:
+        app: cloudlab-frontend
+    spec:
+      containers:
+        - name: cloudlab-frontend
+          image: ghcr.io/cloudlab/cloudlab-frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80

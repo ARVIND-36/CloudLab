@@ -2,3 +2,11 @@
 *.tfstate
 *.tfstate.*
 *.tfvars
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+!**/.env.example
+backend/node_modules/
+frontend/node_modules/

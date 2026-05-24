@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cloudlab-backend-sa
+  namespace: cloudlab
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cloudlab-backend-role
+rules:
+  - apiGroups: ["", "apps", "extensions"]
+    resources: ["namespaces", "deployments", "services", "pods"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cloudlab-backend-binding
+subjects:
+  - kind: ServiceAccount
+    name: cloudlab-backend-sa
+    namespace: cloudlab
+roleRef:
+  kind: ClusterRole
+  name: cloudlab-backend-role
+  apiGroup: rbac.authorization.k8s.io

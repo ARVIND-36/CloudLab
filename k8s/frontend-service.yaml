@@ -1,16 +1,12 @@
 apiVersion: v1
 kind: Service
-
 metadata:
-  name: cloudlab-backend
+  name: cloudlab-frontend
   namespace: cloudlab
-
 spec:
   type: ClusterIP
-
   selector:
-    app: cloudlab-backend
-
+    app: cloudlab-frontend
   ports:
-  - port: 80
-    targetPort: 4000
+    - port: 80
+      targetPort: 80

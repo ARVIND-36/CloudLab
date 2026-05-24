@@ -2,24 +2,47 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: cloudlab-app
+  name: cloudlab-backend
+  namespace: cloudlab
 
 spec:
   replicas: 1
 
   selector:
     matchLabels:
-      app: cloudlab-app
+      app: cloudlab-backend
 
   template:
     metadata:
       labels:
-        app: cloudlab-app
+        app: cloudlab-backend
 
     spec:
+      serviceAccountName: cloudlab-backend-sa
       containers:
-      - name: cloudlab-app
-        image: cloudlabacr12345.azurecr.io/cloudlab-app:latest
+      - name: cloudlab-backend
+        image: cloudlabacr12345.azurecr.io/cloudlab-backend:latest
+        imagePullPolicy: Always
 
         ports:
-        - containerPort: 80
+        - containerPort: 4000
+
+        envFrom:
+        - configMapRef:
+            name: cloudlab-backend-config
+        - secretRef:
+            name: cloudlab-backend-secret
+        # Optionally mount the secret and configmap as files:
+        # volumeMounts:
+        # - name: cloudlab-config
+        #   mountPath: /etc/cloudlab
+        #   readOnly: true
+
+      # volumes:
+      # - name: cloudlab-config
+      #   projected:
+      #     sources:
+      #       - secret:
+      #           name: cloudlab-backend-secret
+      #       - configMap:
+      #           name: cloudlab-backend-config

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudlab-backend-config
+  namespace: cloudlab
+data:
+  # Set these to the images you pushed to ACR or to public images for testing
+  DOCKER_LAB_IMAGE: "nginx:latest"
+  TERRAFORM_LAB_IMAGE: "ghcr.io/cloudlab/terraform-lab:latest"
+  # Frontend origin allowed by CORS
+  CORS_ORIGIN: "http://localhost:5173"
