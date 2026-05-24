@@ -7,13 +7,11 @@ import {
   createService,
   deleteDeployment,
   deleteService,
-  deleteNamespace,
   ensureNamespace,
   waitForDeploymentReady,
   resolveServiceUrl,
 } from './kubernetesService.js';
 import {
-  countLabsInNamespace,
   deleteLabByIdAndUser,
   findLabByIdAndUser,
   insertLab,
@@ -35,7 +33,9 @@ function resolveImage(labType) {
 export async function createLab(user, labType) {
   const namespace = `user-${user.id}`;
   const image = resolveImage(labType);
+
   const resourceNames = buildLabResourceNames(labType);
+
   const labels = buildLabels({
     userId: user.id,
     labType,
@@ -44,21 +44,29 @@ export async function createLab(user, labType) {
 
   try {
     await ensureNamespace(namespace);
+
     await createDeployment({
       namespace,
       deploymentName: resourceNames.deploymentName,
       image,
       labels,
     });
+
     await createService({
       namespace,
       serviceName: resourceNames.serviceName,
       labels,
     });
 
-    await waitForDeploymentReady(namespace, resourceNames.deploymentName);
+    await waitForDeploymentReady(
+      namespace,
+      resourceNames.deploymentName
+    );
 
-    const accessUrl = await resolveServiceUrl(namespace, resourceNames.serviceName);
+    const accessUrl = await resolveServiceUrl(
+      namespace,
+      resourceNames.serviceName
+    );
 
     return await insertLab({
       userId: user.id,
@@ -69,19 +77,27 @@ export async function createLab(user, labType) {
       accessUrl,
       status: 'running',
     });
-  }  catch (error) {
-  console.error('LAB CREATION ERROR FULL:', error);
-  console.error('LAB CREATION ERROR MESSAGE:', error?.message);
-  console.error('LAB CREATION ERROR STACK:', error?.stack);
+  } catch (error) {
+    console.error('LAB CREATION ERROR FULL:', error);
+    console.error('LAB CREATION ERROR MESSAGE:', error?.message);
+    console.error('LAB CREATION ERROR STACK:', error?.stack);
 
-  await deleteService(namespace, resourceNames.serviceName).catch(() => undefined);
-  await deleteDeployment(namespace, resourceNames.deploymentName).catch(() => undefined);
-  await deleteNamespace(namespace).catch(() => undefined);
+    await deleteService(
+      namespace,
+      resourceNames.serviceName
+    ).catch(() => undefined);
 
-  throw error instanceof ApiError
-    ? error
-    : new ApiError(500, 'Failed to create lab environment');
-}
+    await deleteDeployment(
+      namespace,
+      resourceNames.deploymentName
+    ).catch(() => undefined);
+
+    // DO NOT DELETE THE NAMESPACE
+
+    throw error instanceof ApiError
+      ? error
+      : new ApiError(500, 'Failed to create lab environment');
+  }
 }
 
 export async function getLabs(userId) {
@@ -95,14 +111,17 @@ export async function removeLab(userId, labId) {
     throw new ApiError(404, 'Lab not found');
   }
 
-  const remainingLabs = await countLabsInNamespace(userId, lab.namespace, lab.id);
+  await deleteService(
+    lab.namespace,
+    lab.service_name
+  ).catch(() => undefined);
 
-  await deleteService(lab.namespace, lab.service_name);
-  await deleteDeployment(lab.namespace, lab.deployment_name);
+  await deleteDeployment(
+    lab.namespace,
+    lab.deployment_name
+  ).catch(() => undefined);
 
-  if (remainingLabs === 0) {
-    await deleteNamespace(lab.namespace);
-  }
+  // DO NOT DELETE THE NAMESPACE
 
   await deleteLabByIdAndUser(lab.id, userId);
 
