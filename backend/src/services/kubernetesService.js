@@ -171,28 +171,6 @@ export async function deleteService(namespace, serviceName) {
 }
 
 export async function resolveServiceUrl(namespace, serviceName) {
-  const deadline = Date.now() + env.labUrlTimeoutMs;
-
-  while (Date.now() < deadline) {
-    const response = await coreV1.readNamespacedService(serviceName, namespace);
-    const service = response.body;
-    const ingress = service.status?.loadBalancer?.ingress?.[0];
-
-    if (ingress?.ip) {
-      return `http://${ingress.ip}`;
-    }
-
-    if (ingress?.hostname) {
-      return `http://${ingress.hostname}`;
-    }
-
-    await sleep(env.labUrlPollIntervalMs);
-  }
-
-  if (env.labBaseUrl) {
-    return `${env.labBaseUrl.replace(/\/$/, '')}/${namespace}/${serviceName}`;
-  }
-
   return `http://${serviceName}.${namespace}.svc.cluster.local`;
 }
 
