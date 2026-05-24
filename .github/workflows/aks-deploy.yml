@@ -32,7 +32,7 @@ jobs:
 
       - name: Restart Deployment
         run: |
-          kubectl rollout restart deployment/cloudlab-app
+          kubectl rollout restart deployment/cloudlab-backend -n cloudlab
 
       - name: Verify Deployment
         run: |
