@@ -3,19 +3,16 @@
   become: yes
 
   tasks:
-    - name: Login to ACR
-      shell: |
-        az acr login --name cloudlabacr12345
-
-    - name: Remove old container
+    - name: Stop old container
       shell: docker rm -f cloudlab-app || true
+      ignore_errors: yes
 
     - name: Pull latest image
       shell: docker pull cloudlabacr12345.azurecr.io/cloudlab-app:v1
 
-    - name: Run latest container
+    - name: Run container
       shell: |
         docker run -d \
         --name cloudlab-app \
         -p 80:80 \
-        cloudlabacr12345.azurecr.io/cloudlab-app:v1
+        cloudlabacr12345.azurecr.io/cloudlab-app:v1m
