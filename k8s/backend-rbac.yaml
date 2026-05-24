@@ -11,9 +11,20 @@ metadata:
   name: cloudlab-backend-role
 rules:
   - apiGroups: ["", "apps", "extensions"]
-    resources: ["namespaces", "deployments", "services", "pods"]
-    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-
+    resources:
+      - namespaces
+      - deployments
+      - deployments/status
+      - services
+      - pods
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding

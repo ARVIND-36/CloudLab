@@ -169,8 +169,29 @@ export async function deleteService(namespace, serviceName) {
     }
   }
 }
-
 export async function resolveServiceUrl(namespace, serviceName) {
+  const deadline = Date.now() + 120000; // wait up to 2 minutes
+
+  while (Date.now() < deadline) {
+    const response = await coreV1.readNamespacedService(
+      serviceName,
+      namespace
+    );
+
+    const service = response.body;
+    const ingress = service.status?.loadBalancer?.ingress?.[0];
+
+    if (ingress?.ip) {
+      return `http://${ingress.ip}`;
+    }
+
+    if (ingress?.hostname) {
+      return `http://${ingress.hostname}`;
+    }
+
+    await sleep(3000);
+  }
+
   return `http://${serviceName}.${namespace}.svc.cluster.local`;
 }
 
