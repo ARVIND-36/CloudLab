@@ -16,9 +16,16 @@ jobs:
 
       - name: Setup SSH
         run: |
-            mkdir -p ~/.ssh
-            printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-            chmod 600 ~/.ssh/id_rsa
+          mkdir -p ~/.ssh
+          cat << 'EOF' > ~/.ssh/id_rsa
+          ${{ secrets.SSH_PRIVATE_KEY }}
+          EOF
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Debug SSH Key
+        run: |
+          ls -l ~/.ssh
+          head -n 3 ~/.ssh/id_rsa
 
       - name: Add VM to known_hosts
         run: |
