@@ -8,11 +8,11 @@
       ignore_errors: yes
 
     - name: Pull latest image
-      shell: docker pull cloudlabacr12345.azurecr.io/cloudlab-app:a204d53a5b88c52fd492ae83af501faf18ffb8fd
+      shell: docker pull cloudlabacr12345.azurecr.io/cloudlab-app:latest
 
     - name: Run container
       shell: |
         docker run -d \
         --name cloudlab-app \
         -p 80:80 \
-        cloudlabacr12345.azurecr.io/cloudlab-app:a204d53a5b88c52fd492ae83af501faf18ffb8fd
+        cloudlabacr12345.azurecr.io/cloudlab-app:latest
