@@ -1,0 +1,40 @@
+name: Deploy to AKS
+
+on:
+  workflow_run:
+    workflows: ["Docker Build and Push"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set AKS Context
+        uses: azure/aks-set-context@v4
+        with:
+          resource-group: cloudlab-rg
+          cluster-name: cloudlab-aks
+
+      - name: Deploy to AKS
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+
+      - name: Restart Deployment
+        run: |
+          kubectl rollout restart deployment/cloudlab-app
+
+      - name: Verify Deployment
+        run: |
+          kubectl get pods
+          kubectl get svc

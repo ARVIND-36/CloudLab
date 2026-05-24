@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: cloudlab-app
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: cloudlab-app
+
+  template:
+    metadata:
+      labels:
+        app: cloudlab-app
+
+    spec:
+      containers:
+      - name: cloudlab-app
+        image: cloudlabacr12345.azurecr.io/cloudlab-app:latest
+
+        ports:
+        - containerPort: 80
