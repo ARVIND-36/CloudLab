@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: cloudlab.example.com
+    - host: http://localhost:8080
       http:
         paths:
           - path: /api
