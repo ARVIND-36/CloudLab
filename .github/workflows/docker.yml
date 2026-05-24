@@ -23,8 +23,10 @@ jobs:
 
       - name: Build Image
         run: |
-          docker build -t cloudlabacr12345.azurecr.io/cloudlab-app:${{ github.sha }} ./app
+          docker build -t cloudlabacr12345.azurecr.io/cloudlab-app:${{ github.sha }} .
+          docker tag cloudlabacr12345.azurecr.io/cloudlab-app:${{ github.sha }} cloudlabacr12345.azurecr.io/cloudlab-app:latest
 
       - name: Push Image
         run: |
           docker push cloudlabacr12345.azurecr.io/cloudlab-app:${{ github.sha }}
+          docker push cloudlabacr12345.azurecr.io/cloudlab-app:latest
